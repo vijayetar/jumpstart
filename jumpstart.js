@@ -158,51 +158,59 @@ function displayResult (request, response) {
   // let usaUrl = `https://data.usajobs.gov/api/search?Keyword=${jobQuery}&LocationName=${city}`
 
   let azunaResult = superagent.get(azunaUrl)
-  .then(results => {
-  let parsedData = (JSON.parse(results.text))
-  return parsedData.results.map(data => {
-  return new AzunaJobsearchs(data)
-  });
-  }) .catch(err => console.error(err));
+    .then(results => {
+      let parsedData = (JSON.parse(results.text))
+      return parsedData.results.map(data => {
+        return new AzunaJobsearchs(data)
+      });
+    }) .catch(err => console.error(err));
 
   let museResult = superagent.get(museUrl)
-  .then(results => {
-  let parseData = JSON.parse(results.text);
-  return parseData.results.map(data => {
-  return new Musejobsearch(data)
-  })
-  }) .catch(err => console.error(err))
+    .then(results => {
+      let parseData = JSON.parse(results.text);
+      return parseData.results.map(data => {
+        return new Musejobsearch(data)
+      })
+    }) .catch(err => console.error(err))
 
   let gitHubResult = superagent.get(githubUrl)
     .then(githubresults => {
       return githubresults.body.map(value => {
         return new Github(value)
       })
-    }) .catch(err => console.error(err));
+    }) .catch(err => console.error('this is the github results', err));
 
   // let usaJobResult = superagent.get(usaUrl)
-    // .set({
+  // .set({
   // 'Host': 'data.usajobs.gov',
   // 'User-Agent': email,
   // 'Authorization-Key': usaKey
-    // })
-    // .then(results => {
+  // })
+  // .then(results => {
   // let parsedData = JSON.parse(results.text)
   // console.log(parsedData)
   // let data = parsedData.SearchResult.SearchResultItems
   // return data.map(value => {
   // return new USAJOB(value.MatchedObjectDescriptor)
   // })
-    // }) .catch(err => console.error(err));
+  // }) .catch(err => console.error(err));
 
-  Promise.all([azunaResult, museResult, gitHubResult])
+  .race([p, Promise.delay(timeoutTime, timeoutVal)])
+
+  delay(5000).then (([azunaResult, museResult, gitHubResult]) => Promise.all([azunaResult, museResult, gitHubResult])
     .then(result => {
       let newData =result.flat(3);
       let shuffleData= newData.shuffle();
 
       response.status(200).render('./pages/results', {data: shuffleData});
     })
+  )
 
+}
+
+//// delay function
+function delay(ms){
+  return newPromise (resolve => setTimeout(resolve, ms));
 }
 
 ///////// DISPLAY DETAIL OF JOB ON DETAIL PAGE///////////
