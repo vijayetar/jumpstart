@@ -146,15 +146,15 @@ function renderSearch(req, res) {
 ///////// DISPLAY SEARCH RESULTS ON RESULTS PAGE USING API KEYS//////
 function displayResult (request, response) {
   let azunaKey = process.env.AZUNA_API_KEY;
-  let museKey = process.env.MUSE_API_KEY;
+  // let museKey = process.env.MUSE_API_KEY;
   // let usaKey = process.env.USAJOBS_API_KEY;
   let city = request.body.location;
   // let email= process.env.EMAIL;
 
   let jobQuery = request.body.job_title;
   let azunaUrl = `https://api.adzuna.com/v1/api/jobs/us/search/1?app_id=9b8fb405&app_key=${azunaKey}&where=${city}&what=$${jobQuery}`;
-  let museUrl = `https://www.themuse.com/api/public/jobs?location=${city}&page=1&descending=true&api_key=${museKey}`;
-  let githubUrl= `https://jobs.github.com/positions.json?description=${jobQuery}&location=${city}`;
+  // let museUrl = `https://www.themuse.com/api/public/jobs?location=${city}&page=1&descending=true&api_key=${museKey}`;
+  // let githubUrl= `https://jobs.github.com/positions.json?description=${jobQuery}&location=${city}`;
   // let usaUrl = `https://data.usajobs.gov/api/search?Keyword=${jobQuery}&LocationName=${city}`
 
   let azunaResult = superagent.get(azunaUrl)
@@ -166,22 +166,22 @@ function displayResult (request, response) {
       });
     }) .catch(err => console.error(err));
 
-  let museResult = superagent.get(museUrl)
-    .then(results => {
-      console.log('this is the Muse results body', results.body)
-      let parseData = JSON.parse(results.text);
-      return parseData.results.map(data => {
-        return new Musejobsearch(data)
-      })
-    }) .catch(err => console.error(err))
+  // let museResult = superagent.get(museUrl)
+  //   .then(results => {
+  //     console.log('this is the Muse results body', results.body)
+  //     let parseData = JSON.parse(results.text);
+  //     return parseData.results.map(data => {
+  //       return new Musejobsearch(data)
+  //     })
+  //   }) .catch(err => console.error(err))
 
-  let gitHubResult = superagent.get(githubUrl)
-    .then(githubresults => {
-      console.log('this is the github results body', githubresults.body)
-      return githubresults.body.map(value => {
-        return new Github(value)
-      })
-    }) .catch(err => console.error('this is the github results', err));
+  // let gitHubResult = superagent.get(githubUrl)
+  //   .then(githubresults => {
+  //     console.log('this is the github results body', githubresults.body)
+  //     return githubresults.body.map(value => {
+  //       return new Github(value)
+  //     })
+  //   }) .catch(err => console.error('this is the github results', err));
 
   // let usaJobResult = superagent.get(usaUrl)
   // .set({
@@ -197,10 +197,10 @@ function displayResult (request, response) {
   // return new USAJOB(value.MatchedObjectDescriptor)
   // })
   // }) .catch(err => console.error(err));
-    console.log('this is above the Promise All');
-  Promise.all([azunaResult, museResult, gitHubResult])
+  console.log('this is above the Promise All');
+  Promise.all([azunaResult])
     .then(result => {
-      let newData =result.flat(2);
+      let newData =result.flat(1);
       console.log('this is newdATA from the promise all function', newData);
       let shuffleData= newData.shuffle();
 
@@ -309,23 +309,23 @@ function AzunaJobsearchs(obj) {
   obj.category.label !== undefined ? this.skill = obj.category.label : this.skill = 'not available' || 'not available'
 }
 /////// constructor for Muse/////
-function Musejobsearch(obj) {
-  obj.name !== undefined ? this.title = obj.name : this.title = 'title is unavailable' || 'title is unavailable'
-  obj.locations.length > 1 ? this.location = obj.locations.map(value => { return value.name }).join(', ') : this.location = obj.locations[0].name || 'location is unavailable'
-  this.company = obj.company.name || 'not available'
-  this.summary = obj.contents || 'not available';
-  this.url = obj.refs.landing_page || 'not available';
-  obj.categories.name !== undefined ? this.skill = obj.categories[0].name : this.skill = 'not available' || 'not available'
-}
+// function Musejobsearch(obj) {
+//   obj.name !== undefined ? this.title = obj.name : this.title = 'title is unavailable' || 'title is unavailable'
+//   obj.locations.length > 1 ? this.location = obj.locations.map(value => { return value.name }).join(', ') : this.location = obj.locations[0].name || 'location is unavailable'
+//   this.company = obj.company.name || 'not available'
+//   this.summary = obj.contents || 'not available';
+//   this.url = obj.refs.landing_page || 'not available';
+//   obj.categories.name !== undefined ? this.skill = obj.categories[0].name : this.skill = 'not available' || 'not available'
+// }
 //////constructor for github////
-function Github(obj) {
-  obj.title !== undefined ? this.title = obj.title : this.title = 'title is unavailable' || 'title is unavailable'
-  obj.location !== undefined ? this.location = obj.location : this.location = 'not available' || 'location is unavailable'
-  obj.company !== undefined ? this.company = obj.company : this.company = 'not available' || 'not available';
-  obj.description !== undefined ? this.summary = obj.description : 'not available' || 'not available';
-  obj.url !== undefined ? this.url = obj.url: this.url = 'not available';
-  this.skill = 'not available';
-}
+// function Github(obj) {
+//   obj.title !== undefined ? this.title = obj.title : this.title = 'title is unavailable' || 'title is unavailable'
+//   obj.location !== undefined ? this.location = obj.location : this.location = 'not available' || 'location is unavailable'
+//   obj.company !== undefined ? this.company = obj.company : this.company = 'not available' || 'not available';
+//   obj.description !== undefined ? this.summary = obj.description : 'not available' || 'not available';
+//   obj.url !== undefined ? this.url = obj.url: this.url = 'not available';
+//   this.skill = 'not available';
+// }
 ///////////constructor for USAjob/////
 // function USAJOB(obj) {
 //   obj.PositionTitle !== undefined ? this.title = obj.PositionTitle : this.title = 'title is unavailable' || 'title is unavailable'
