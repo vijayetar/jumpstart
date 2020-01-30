@@ -145,39 +145,41 @@ function renderSearch(req, res) {
 
 ///////// DISPLAY SEARCH RESULTS ON RESULTS PAGE USING API KEYS//////
 function displayResult (request, response) {
-  // let azunaKey = process.env.AZUNA_API_KEY;
-  // let museKey = process.env.MUSE_API_KEY;
+  let azunaKey = process.env.AZUNA_API_KEY;
+  let museKey = process.env.MUSE_API_KEY;
   // let usaKey = process.env.USAJOBS_API_KEY;
   let city = request.body.location;
   // let email= process.env.EMAIL;
 
   let jobQuery = request.body.job_title;
-  // let azunaUrl = `https://api.adzuna.com/v1/api/jobs/us/search/1?app_id=9b8fb405&app_key=${azunaKey}&where=${city}&what=$${jobQuery}`;
-  // let museUrl = `https://www.themuse.com/api/public/jobs?location=${city}&page=1&descending=true&api_key=${museKey}`;
+  let azunaUrl = `https://api.adzuna.com/v1/api/jobs/us/search/1?app_id=9b8fb405&app_key=${azunaKey}&where=${city}&what=$${jobQuery}`;
+  let museUrl = `https://www.themuse.com/api/public/jobs?location=${city}&page=1&descending=true&api_key=${museKey}`;
   let githubUrl= `https://jobs.github.com/positions.json?description=${jobQuery}&location=${city}`;
   // let usaUrl = `https://data.usajobs.gov/api/search?Keyword=${jobQuery}&LocationName=${city}`
 
-  // let azunaResult = superagent.get(azunaUrl)
-  // .then(results => {
-  // let parsedData = (JSON.parse(results.text))
-  // return parsedData.results.map(data => {
-  // return new AzunaJobsearchs(data)
-  // });
-  // }) .catch(err => console.error(err));
+  let azunaResult = superagent.get(azunaUrl)
+  .then(results => {
+  let parsedData = (JSON.parse(results.text))
+  return parsedData.results.map(data => {
+  return new AzunaJobsearchs(data)
+  });
+  }) .catch(err => console.error(err));
 
-  // let museResult = superagent.get(museUrl)
-  // .then(results => {
-  // let parseData = JSON.parse(results.text);
-  // return parseData.results.map(data => {
-  // return new Musejobsearch(data)
-  // })
-  // }) .catch(err => console.error(err))
+  let museResult = superagent.get(museUrl)
+  .then(results => {
+  let parseData = JSON.parse(results.text);
+  return parseData.results.map(data => {
+  return new Musejobsearch(data)
+  })
+  }) .catch(err => console.error(err))
+
   let gitHubResult = superagent.get(githubUrl)
     .then(githubresults => {
       return githubresults.body.map(value => {
         return new Github(value)
       })
     }) .catch(err => console.error(err));
+
   // let usaJobResult = superagent.get(usaUrl)
     // .set({
   // 'Host': 'data.usajobs.gov',
@@ -193,21 +195,14 @@ function displayResult (request, response) {
   // })
     // }) .catch(err => console.error(err));
 
-  // Promise.all([azunaResult, museResult, gitHubResult, usaJobResult])
-  //   .then(result => {
-  //     let newData =result.flat(3);
-  //     let shuffleData= newData.shuffle();
-
-  //     response.status(200).render('./pages/results', {data: shuffleData});
-  //   })
-  Promise.all([gitHubResult])
+  Promise.all([azunaResult, museResult, gitHubResult])
     .then(result => {
-      // let newData =result.flat(3);
-      // let shuffleData= newData.shuffle();
+      let newData =result.flat(3);
+      let shuffleData= newData.shuffle();
 
-      response.status(200).render('./pages/results', {data: result});
+      response.status(200).render('./pages/results', {data: shuffleData});
     })
-    .catch(err => console.error(err));
+
 }
 
 ///////// DISPLAY DETAIL OF JOB ON DETAIL PAGE///////////
