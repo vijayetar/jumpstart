@@ -110,7 +110,7 @@ function registerUser(req, res) {
         client.query(newUserQuery, newUserValues)
           .then(
             client.query(newUserTable)
-              .then(results => {
+              .then(() => {
                 user.username = registerResults.username;
                 console.log('this is user.username', user.username);
                 res.status(200).redirect('/search');
@@ -195,23 +195,16 @@ function displayResult (request, response) {
   // })
   // }) .catch(err => console.error(err));
 
-  .race([p, Promise.delay(timeoutTime, timeoutVal)])
-
-  delay(5000).then (([azunaResult, museResult, gitHubResult]) => Promise.all([azunaResult, museResult, gitHubResult])
+  Promise.all([azunaResult, museResult, gitHubResult])
     .then(result => {
       let newData =result.flat(3);
       let shuffleData= newData.shuffle();
 
       response.status(200).render('./pages/results', {data: shuffleData});
     })
-  )
 
 }
 
-//// delay function
-function delay(ms){
-  return newPromise (resolve => setTimeout(resolve, ms));
-}
 
 ///////// DISPLAY DETAIL OF JOB ON DETAIL PAGE///////////
 function displayDetail(request, response) {
