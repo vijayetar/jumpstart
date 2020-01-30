@@ -198,7 +198,8 @@ function displayResult (request, response) {
   Promise.all([azunaResult, museResult, gitHubResult])
     .then(result => {
       console.log('tjis is result within the promiseall statement', result)
-      let newData =result.flat(3);
+      let newData =result.flat(2);
+      console.log('this is newdATA fromthe promiseall function', newData);
       let shuffleData= newData.shuffle();
 
       response.status(200).render('./pages/results', {data: shuffleData});
