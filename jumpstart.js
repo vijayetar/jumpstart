@@ -159,6 +159,7 @@ function displayResult (request, response) {
 
   let azunaResult = superagent.get(azunaUrl)
     .then(results => {
+      console.log('this is the azuna results body', results.body)
       let parsedData = (JSON.parse(results.text))
       return parsedData.results.map(data => {
         return new AzunaJobsearchs(data)
@@ -167,6 +168,7 @@ function displayResult (request, response) {
 
   let museResult = superagent.get(museUrl)
     .then(results => {
+      console.log('this is the Muse results body', results.body)
       let parseData = JSON.parse(results.text);
       return parseData.results.map(data => {
         return new Musejobsearch(data)
@@ -175,6 +177,7 @@ function displayResult (request, response) {
 
   let gitHubResult = superagent.get(githubUrl)
     .then(githubresults => {
+      console.log('this is the github results body', githubresults.body)
       return githubresults.body.map(value => {
         return new Github(value)
       })
@@ -194,12 +197,11 @@ function displayResult (request, response) {
   // return new USAJOB(value.MatchedObjectDescriptor)
   // })
   // }) .catch(err => console.error(err));
-
+    console.log('this is above the Promise All');
   Promise.all([azunaResult, museResult, gitHubResult])
     .then(result => {
-      console.log('tjis is result within the promiseall statement', result)
       let newData =result.flat(2);
-      console.log('this is newdATA fromthe promiseall function', newData);
+      console.log('this is newdATA from the promise all function', newData);
       let shuffleData= newData.shuffle();
 
       response.status(200).render('./pages/results', {data: shuffleData});
