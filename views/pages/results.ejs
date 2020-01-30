@@ -15,9 +15,9 @@
     <main class='new-data'>
         <% data.forEach((datas,idx) => { %>
         <section class="data-card<%=idx%>">
-            <h2><%- datas.title %></h2>
-            <p>Location: <%- datas.location %></p>
-            <p>Company: <%- datas.company %></p>
+            <h2><%= datas.title %></h2>
+            <p>Location: <%= datas.location %></p>
+            <p>Company: <%= datas.company %></p>
             <form action="/searches/detail" method="post" class="form-data">
                 <input type='hidden' id='title' name="title" value="<%= datas.title %>" required />
                 <input type='hidden' id='location' name="location" value="<%= datas.location %>" required />
