@@ -297,46 +297,42 @@ function displayIndex(request, response) {
 
 /// CONSTRUCTORS FOR THE SEARCH PAGE/////////////////
 
-// /////// constructor for azuna/////
 function AzunaJobsearchs(obj) {
-  obj.title !== undefined ? this.title = obj.title : this.title = 'title is unavailable'
-  obj.location.display_name !== undefined ? this.location = obj.location.display_name : this.location = 'location is unavailable'
-  this.company = obj.company.display_name;
-  this.summary = obj.description;
-  this.url = obj.redirect_url;
-  obj.category.label !== undefined ? this.skill = obj.category.label : this.skill = 'not available'
+  obj.title !== undefined ? this.title = obj.title : this.title = 'title is unavailable' || 'title is unavailable'
+  obj.location.display_name !== undefined ? this.location = obj.location.display_name : this.location = 'location is unavailable' || 'location is unavailable'
+  this.company = obj.company.display_name || 'not available'
+  this.summary = obj.description || 'not available'
+  this.url = obj.redirect_url || 'not available'
+  obj.category.label !== undefined ? this.skill = obj.category.label : this.skill = 'not available' || 'not available'
 }
-
 /////// constructor for Muse/////
 function Musejobsearch(obj) {
-  obj.name !== undefined ? this.title = obj.name : this.title = 'title is unavailable'
-  obj.locations.length > 1 ? this.location = obj.locations.map(value => { return value.name }).join(', ') : this.location = obj.locations[0].name
-  this.company = obj.company.name;
-  this.summary = obj.contents;
-  this.url = obj.refs.landing_page;
-  obj.categories.name !== undefined ? this.skill = obj.categories[0].name : this.skill = 'not available';
+  obj.name !== undefined ? this.title = obj.name : this.title = 'title is unavailable' || 'title is unavailable'
+  obj.locations.length > 1 ? this.location = obj.locations.map(value => { return value.name }).join(', ') : this.location = obj.locations[0].name || 'location is unavailable'
+  this.company = obj.company.name || 'not available'
+  this.summary = obj.contents || 'not available';
+  this.url = obj.refs.landing_page || 'not available';
+  obj.categories.name !== undefined ? this.skill = obj.categories[0].name : this.skill = 'not available' || 'not available'
 }
-
 //////constructor for github////
 function Github(obj) {
-  obj.title !== undefined ? this.title = obj.title : this.title = 'title is unavailable';
-  obj.location !== undefined ? this.location = obj.location : this.location = 'not available';
-  obj.company !== undefined ? this.company = obj.company : this.company = 'not available';
-  obj.description !== undefined ? this.summary = obj.description : 'not available';
-  obj.url !== undefined ? this.url = obj.url :
-    this.url = 'not available';
-  this.skill = 'not available'
+  obj.title !== undefined ? this.title = obj.title : this.title = 'title is unavailable' || 'title is unavailable'
+  obj.location !== undefined ? this.location = obj.location : this.location = 'not available' || 'location is unavailable'
+  obj.company !== undefined ? this.company = obj.company : this.company = 'not available' || 'not available';
+  obj.description !== undefined ? this.summary = obj.description : 'not available' || 'not available';
+  obj.url !== undefined ? this.url = obj.url: this.url = 'not available';
+  this.skill = 'not available';
 }
-
 ///////////constructor for USAjob/////
-function USAJOB(obj) {
-  obj.PositionTitle !== undefined ? this.title = obj.PositionTitle : this.title = 'title is unavailable';
-  this.location = obj.PositionLocationDisplay;
-  obj.OrganizationName !== undefined ? this.company = obj.OrganizationName : this.company = 'undefined';
-  obj.QualificationSummary !== undefined ? this.summary = obj.QualificationSummary : this.summary = 'undefined'
-  obj.ApplyURI !== undefined ? this.url = obj.ApplyURI : this.url = 'undefined';
-  this.skill = 'Military job'
-}
+// function USAJOB(obj) {
+//   obj.PositionTitle !== undefined ? this.title = obj.PositionTitle : this.title = 'title is unavailable' || 'title is unavailable'
+//   this.location = obj.PositionLocationDisplay || 'location is unavailable'
+//   obj.OrganizationName !== undefined ? this.company = obj.OrganizationName : this.company = 'undefined' || 'not available'
+//   obj.QualificationSummary !== undefined ? this.summary = obj.QualificationSummary : this.summary = 'undefined' || 'not available'
+//   obj.ApplyURI !== undefined ? this.url = obj.ApplyURI : this.url = 'undefined' || 'not available'
+//   this.skill = 'Military job'
+// }
+
 
 /////////////////// Error handler////////////////
 app.get('*', notFoundHandler);
