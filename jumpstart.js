@@ -197,6 +197,7 @@ function displayResult (request, response) {
 
   Promise.all([azunaResult, museResult, gitHubResult])
     .then(result => {
+      console.log('tjis is result within the promiseall statement', result)
       let newData =result.flat(3);
       let shuffleData= newData.shuffle();
 
