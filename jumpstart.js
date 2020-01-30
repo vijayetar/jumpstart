@@ -205,7 +205,7 @@ function displayResult (request, response) {
       // let newData =result.flat(3);
       // let shuffleData= newData.shuffle();
 
-      response.status(200).render('./pages/results', {data: result.rows[0]});
+      response.status(200).render('./pages/results', {data: result});
     })
     .catch(err => console.error(err));
 }
