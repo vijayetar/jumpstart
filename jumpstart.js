@@ -146,16 +146,16 @@ function renderSearch(req, res) {
 ///////// DISPLAY SEARCH RESULTS ON RESULTS PAGE USING API KEYS//////
 function displayResult (request, response) {
   // let azunaKey = process.env.AZUNA_API_KEY;
-  let museKey = process.env.MUSE_API_KEY;
-  // let usaKey = process.env.USAJOBS_API_KEY;
+  // let museKey = process.env.MUSE_API_KEY;
+  let usaKey = process.env.USAJOBS_API_KEY;
   let city = request.body.location;
-  // let email= process.env.EMAIL;
+  let email= process.env.EMAIL;
 
-  // let jobQuery = request.body.job_title;
+  let jobQuery = request.body.job_title;
   // let azunaUrl = `https://api.adzuna.com/v1/api/jobs/us/search/1?app_id=9b8fb405&app_key=${azunaKey}&where=${city}&what=$${jobQuery}`;
-  let museUrl = `https://www.themuse.com/api/public/jobs?location=${city}&page=1&descending=true&api_key=${museKey}`;
+  // let museUrl = `https://www.themuse.com/api/public/jobs?location=${city}&page=1&descending=true&api_key=${museKey}`;
   // let githubUrl= `https://jobs.github.com/positions.json?description=${jobQuery}&location=${city}`;
-  // let usaUrl = `https://data.usajobs.gov/api/search?Keyword=${jobQuery}&LocationName=${city}`
+  let usaUrl = `https://data.usajobs.gov/api/search?Keyword=${jobQuery}&LocationName=${city}`
 
   // let azunaResult = superagent.get(azunaUrl)
   //   .then(results => {
@@ -166,14 +166,14 @@ function displayResult (request, response) {
   //     });
   //   }) .catch(err => console.error(err));
 
-  let museResult = superagent.get(museUrl)
-    .then(results => {
-      console.log('this is the Muse results body', results.body)
-      let parseData = JSON.parse(results.text);
-      return parseData.results.map(data => {
-        return new Musejobsearch(data)
-      })
-    }) .catch(err => console.error(err))
+  // let museResult = superagent.get(museUrl)
+  //   .then(results => {
+  //     console.log('this is the Muse results body', results.body)
+  //     let parseData = JSON.parse(results.text);
+  //     return parseData.results.map(data => {
+  //       return new Musejobsearch(data)
+  //     })
+  //   }) .catch(err => console.error(err))
 
   // let gitHubResult = superagent.get(githubUrl)
   //   .then(githubresults => {
@@ -183,22 +183,22 @@ function displayResult (request, response) {
   //     })
   //   }) .catch(err => console.error('this is the github results', err));
 
-  // let usaJobResult = superagent.get(usaUrl)
-  // .set({
-  // 'Host': 'data.usajobs.gov',
-  // 'User-Agent': email,
-  // 'Authorization-Key': usaKey
-  // })
-  // .then(results => {
-  // let parsedData = JSON.parse(results.text)
-  // console.log(parsedData)
-  // let data = parsedData.SearchResult.SearchResultItems
-  // return data.map(value => {
-  // return new USAJOB(value.MatchedObjectDescriptor)
-  // })
-  // }) .catch(err => console.error(err));
+  let usaJobResult = superagent.get(usaUrl)
+    .set({
+      'Host': 'data.usajobs.gov',
+      'User-Agent': email,
+      'Authorization-Key': usaKey
+    })
+    .then(results => {
+      let parsedData = JSON.parse(results.text)
+      console.log(parsedData)
+      let data = parsedData.SearchResult.SearchResultItems
+      return data.map(value => {
+        return new USAJOB(value.MatchedObjectDescriptor)
+      })
+    }) .catch(err => console.error(err));
   console.log('this is above the Promise All');
-  Promise.all([museResult])
+  Promise.all([usaJobResult])
     .then(result => {
       let newData =result.flat(1);
       console.log('this is newdATA from the promise all function', newData);
@@ -309,14 +309,14 @@ function displayIndex(request, response) {
 //   obj.category.label !== undefined ? this.skill = obj.category.label : this.skill = 'not available' || 'not available'
 // }
 /////// constructor for Muse/////
-function Musejobsearch(obj) {
-  obj.name !== undefined ? this.title = obj.name : this.title = 'title is unavailable' || 'title is unavailable'
-  obj.locations.length > 1 ? this.location = obj.locations.map(value => { return value.name }).join(', ') : this.location = obj.locations[0].name || 'location is unavailable'
-  this.company = obj.company.name || 'not available'
-  this.summary = obj.contents || 'not available';
-  this.url = obj.refs.landing_page || 'not available';
-  obj.categories.name !== undefined ? this.skill = obj.categories[0].name : this.skill = 'not available' || 'not available'
-}
+// function Musejobsearch(obj) {
+//   obj.name !== undefined ? this.title = obj.name : this.title = 'title is unavailable' || 'title is unavailable'
+//   obj.locations.length > 1 ? this.location = obj.locations.map(value => { return value.name }).join(', ') : this.location = obj.locations[0].name || 'location is unavailable'
+//   this.company = obj.company.name || 'not available'
+//   this.summary = obj.contents || 'not available';
+//   this.url = obj.refs.landing_page || 'not available';
+//   obj.categories.name !== undefined ? this.skill = obj.categories[0].name : this.skill = 'not available' || 'not available'
+// }
 //////constructor for github////
 // function Github(obj) {
 //   obj.title !== undefined ? this.title = obj.title : this.title = 'title is unavailable' || 'title is unavailable'
@@ -327,14 +327,14 @@ function Musejobsearch(obj) {
 //   this.skill = 'not available';
 // }
 ///////////constructor for USAjob/////
-// function USAJOB(obj) {
-//   obj.PositionTitle !== undefined ? this.title = obj.PositionTitle : this.title = 'title is unavailable' || 'title is unavailable'
-//   this.location = obj.PositionLocationDisplay || 'location is unavailable'
-//   obj.OrganizationName !== undefined ? this.company = obj.OrganizationName : this.company = 'undefined' || 'not available'
-//   obj.QualificationSummary !== undefined ? this.summary = obj.QualificationSummary : this.summary = 'undefined' || 'not available'
-//   obj.ApplyURI !== undefined ? this.url = obj.ApplyURI : this.url = 'undefined' || 'not available'
-//   this.skill = 'Military job'
-// }
+function USAJOB(obj) {
+  obj.PositionTitle !== undefined ? this.title = obj.PositionTitle : this.title = 'title is unavailable' || 'title is unavailable'
+  this.location = obj.PositionLocationDisplay || 'location is unavailable'
+  obj.OrganizationName !== undefined ? this.company = obj.OrganizationName : this.company = 'undefined' || 'not available'
+  obj.QualificationSummary !== undefined ? this.summary = obj.QualificationSummary : this.summary = 'undefined' || 'not available'
+  obj.ApplyURI !== undefined ? this.url = obj.ApplyURI : this.url = 'undefined' || 'not available'
+  this.skill = 'Military job'
+}
 
 
 /////////////////// Error handler////////////////
